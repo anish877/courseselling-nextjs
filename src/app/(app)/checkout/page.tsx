@@ -315,7 +315,7 @@ export default function CourseDetail() {
         <InfiniteMovingCards items={testimonials2} speed="slow" direction='right' />
         <CourseFaq />
       </div>
-        <CourseFeatured />
+        <CourseFeatured course={course}/>
     </div>
     </div>
   )
