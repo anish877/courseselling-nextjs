@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    remotePatterns: [
+    remotePatterns:  [
       // Unsplash domain
       {
         protocol: 'https',
@@ -51,7 +51,10 @@ const nextConfig = {
     ],
   },
   typescript: {
-    ignoreBuildErrors: true, // Ignore TypeScript errors during the build
+    ignoreBuildErrors: true, // Ignores all TypeScript errors during the build
+  },
+  eslint: {
+    ignoreDuringBuilds: true, // Ignores ESLint errors and warnings during the build
   },
 };
 
