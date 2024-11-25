@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import mongoose from "mongoose";
 import OrderModel from "@/model/orderModel";
 import CourseModel from "@/model/courseModel";
@@ -6,9 +6,11 @@ import { getServerSession } from 'next-auth/next';
 import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 import { User } from "next-auth";
 
-export async function GET({ params }: { params: { courseId: string } }) {
+export async function GET(req: NextRequest) {
   try {
-    const { courseId } = await params;
+    // Extract `params` from the URL
+    const url = new URL(req.url);
+    const courseId = url.pathname.split('/').pop(); // Gets the `[courseId]`
 
     if (!courseId || !mongoose.isValidObjectId(courseId)) {
       return NextResponse.json({ error: "Invalid course ID." }, { status: 400 });
