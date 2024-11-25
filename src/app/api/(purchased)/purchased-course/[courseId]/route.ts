@@ -6,7 +6,7 @@ import { getServerSession } from 'next-auth/next';
 import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 import { User } from "next-auth";
 
-export async function GET(req: Request, { params }: { params: { courseId: string } }) {
+export async function GET({ params }: { params: { courseId: string } }) {
   try {
     const { courseId } = await params;
 
