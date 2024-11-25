@@ -2,9 +2,7 @@
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
-import { useSession } from "next-auth/react"
-import RazorpayPaymentButton from "./RazorpayButton"
-import { Clock, User, BarChart } from "lucide-react"
+import { Clock } from "lucide-react"
 import Image from "next/image"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
@@ -28,8 +26,7 @@ interface SimpleCourse {
 }
 
 const CourseDetailModal: React.FC<CourseDetailModalProps> = ({ course, open, onClose }) => {
-  const { data: session } = useSession()
-
+ 
   if (!course) return null
 
   return (
@@ -53,7 +50,7 @@ const CourseDetailModal: React.FC<CourseDetailModalProps> = ({ course, open, onC
             <p className="text-gray-700">{course.description}</p>
             <Separator />
             <div className="space-y-2">
-              <h3 className="font-semibold">What you'll learn:</h3>
+              <h3 className="font-semibold">What you&apos;ll learn:</h3>
               <ul className="list-disc list-inside text-sm text-gray-600">
                 <li>Comprehensive understanding of the subject</li>
                 <li>Practical skills and techniques</li>

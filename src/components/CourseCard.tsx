@@ -44,8 +44,6 @@ export default function CourseCard({
   isAdmin = false,
   isLoading = true,
   purchasedCourseId,
-
-  imageUrl = "/placeholder.svg?height=400&width=600",
   duration = "10 weeks",
   level = "Intermediate",
   rating = 4.8,

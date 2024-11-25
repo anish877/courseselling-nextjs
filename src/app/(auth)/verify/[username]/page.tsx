@@ -5,7 +5,6 @@ import {
   Form,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
@@ -21,6 +20,7 @@ import Banner from '@/components/Banner';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useState } from 'react';
 import { CheckCircle, Loader2 } from 'lucide-react';
+import Link from 'next/link';
 
 
 export default function VerifyAccount() {
@@ -113,9 +113,9 @@ export default function VerifyAccount() {
             </form>
           </Form>
           <p className="mt-4 text-sm text-center text-gray-500 dark:text-gray-400">
-            Didn't receive the code?{' '}
+            Did&apos;t receive the code?{' '}
             <Button variant="link" className="p-0 h-auto font-normal">
-              Resend Code
+              <Link href="/signup">Retry signup</Link>
             </Button>
           </p>
         </CardContent>

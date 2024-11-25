@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm, FormProvider } from "react-hook-form"
 import * as z from "zod"
 import axios, { AxiosError } from "axios"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { useDebounceCallback } from "usehooks-ts"
 import { useToast } from "@/hooks/use-toast"
 import { useRouter } from "next/navigation"
@@ -13,7 +13,7 @@ import { ApiResponse } from "@/types/ApiResponse"
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Loader2, User, Mail, Lock, Check, X, Phone } from 'lucide-react'
+import { Loader2, User, Mail, Lock, Phone } from 'lucide-react'
 import Link from "next/link"
 import Banner from "@/components/Banner"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
@@ -24,8 +24,7 @@ function SignupPage() {
   const router = useRouter()
 
   const [username, setUsername] = useState("")
-  const [usernameMessage, setUsernameMessage] = useState("")
-  const [isCheckingUsername, setIsCheckingUsername] = useState(false)
+  // const [usernameMessage, setUsernameMessage] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const debounce = useDebounceCallback(setUsername, 300)
@@ -83,13 +82,14 @@ function SignupPage() {
           description: response.data.message
         })
         router.replace(`/verify/${username}`)
-      } catch (error: any) {
-        console.error(`Error in user signup`, error)
+      } catch (error: unknown) {
+        if (error instanceof AxiosError) {
         toast({
           title: 'Signup failed',
           description: error?.response?.data?.message,
           variant: 'destructive'
         })
+      }
       } finally {
         setIsSubmitting(false)
       }
@@ -129,7 +129,7 @@ function SignupPage() {
                           />
                         </div>
                       </FormControl>
-                      {isCheckingUsername ? (
+                      {/* {isCheckingUsername ? (
                         <div className="flex items-center text-sm text-gray-500">
                           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                           Checking username...
@@ -143,7 +143,7 @@ function SignupPage() {
                           )}
                           {usernameMessage}
                         </div>
-                      )}
+                      )} */}
                       <FormDescription className="text-xs">
                         This is your public display name.
                       </FormDescription>
@@ -169,7 +169,7 @@ function SignupPage() {
                         </div>
                       </FormControl>
                       <FormDescription className="text-xs">
-                        We'll use this email to send you account notifications.
+                        We&apos;ll use this email to send you account notifications.
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
@@ -193,7 +193,7 @@ function SignupPage() {
                         </div>
                       </FormControl>
                       <FormDescription className="text-xs">
-                        We'll use this to send you course related updates.
+                        We&apos;ll use this to send you course related updates.
                       </FormDescription>
                       <FormMessage />
                     </FormItem>

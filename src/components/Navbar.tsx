@@ -11,7 +11,7 @@ import Cart from "./Cart";
 import { cn } from "@/lib/utils";
 import { ThemeButton } from "./ThemeButton";
 
-export default function Navbar({ className }: { className?: string }){
+export default function Navbar(){
   const { data: session } = useSession();
   const [scrolled, setScrolled] = useState(false);
   const [lastScrollY, setLastScrollY] = useState(0);

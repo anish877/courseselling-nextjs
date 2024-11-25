@@ -124,7 +124,7 @@ function TestimonialItem({ testimonial }: { testimonial: Testimonial }) {
         </div>
       </div>
       <div className="w-full md:w-2/3 p-6 flex flex-col justify-center">
-        <blockquote className="text-lg italic mb-4">"{testimonial.testimonial}"</blockquote>
+      <blockquote className="text-lg italic mb-4">&quot;{testimonial.testimonial}&quot;</blockquote>
         <div className="mt-auto">
           <p className="text-sm text-gray-500">Learnix Student</p>
         </div>

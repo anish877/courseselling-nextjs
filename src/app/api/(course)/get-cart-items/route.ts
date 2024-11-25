@@ -4,7 +4,7 @@ import CourseModel from '@/model/courseModel'; // Import CourseModel
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '../../auth/[...nextauth]/options';
 
-export async function GET(request: Request) {
+export async function GET() {
   try {
     await dbConnect();
     console.log("Connected to DB");

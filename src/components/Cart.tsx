@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { Dialog, DialogContent, DialogTrigger, DialogTitle } from './ui/dialog'
 import { Button } from './ui/button'
-import { X, ShoppingCart, Trash2 } from 'lucide-react'
+import {  ShoppingCart, Trash2 } from 'lucide-react'
 import { useCart } from './cartState/cartContext'
 import RazorpayPaymentButton from './RazorpayButton'
 import { useSession } from 'next-auth/react'
@@ -96,7 +96,7 @@ const Cart: React.FC<CartProps> = ({ icon = <ShoppingCart className="w-5 h-5" />
           <div className="text-center py-12">
             <ShoppingCart className="w-16 h-16 text-gray-400 mx-auto mb-4" />
             <p className="text-xl font-semibold text-gray-900 mb-2">Your cart is empty</p>
-            <p className="text-gray-500 mb-4">Looks like you haven't added any courses yet.</p>
+            <p className="text-gray-500 mb-4">Looks like you haven&apos;t added any courses yet.</p>
            <Link href={"/all-courses"}> <Button onClick={() => setIsOpen(false)}>Start Shopping</Button></Link>
           </div>
         )}

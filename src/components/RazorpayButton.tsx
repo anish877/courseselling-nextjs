@@ -5,8 +5,6 @@ import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import { useCart } from './cartState/cartContext';
 import { useSession } from 'next-auth/react';
-import Link from 'next/link';
-import { Button } from './ui/button';
 import { Loader2 } from 'lucide-react';
 
 declare global {

@@ -17,7 +17,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import { signinSchema } from '@/schemas/signinSchema';
-import { Loader2, Lock, Mail, User } from 'lucide-react';
+import { Loader2, Lock, User } from 'lucide-react';
 import { useState } from 'react';
 import Banner from '@/components/Banner';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -68,12 +68,14 @@ export default function SignInForm() {
         router.replace('/');
         console.log(result)
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
+      if (error instanceof Error) {
       toast({
         title: 'Error',
         description: error.message || "Failed to login",
         variant: 'destructive',
       });
+    }
     } finally {
       setIsSubmitting(false);
     }

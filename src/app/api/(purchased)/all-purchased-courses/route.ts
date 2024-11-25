@@ -5,7 +5,7 @@ import { getServerSession } from 'next-auth/next';
 import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 import { User } from "next-auth";
 
-export async function GET(req: Request) {
+export async function GET() {
   // Step 1: Validate the user session
   const session = await getServerSession(authOptions);
   const user: User = session?.user as User;

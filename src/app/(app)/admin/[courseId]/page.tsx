@@ -48,8 +48,10 @@ const AddVideos = () => {
       });
 
       router.push(`/admin/${courseId}`); // Redirect to the course details page
-    } catch (err: any) {
-      setError(err.response?.data?.message || err.message || "An error occurred");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+      setError(err.message || "An error occurred");
+      }
     } finally {
       setLoading(false);
     }

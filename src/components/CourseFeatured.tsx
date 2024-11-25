@@ -5,7 +5,20 @@ import RazorpayPaymentButton from "./RazorpayButton"
 import { useSession } from "next-auth/react"
 
 
-export default function CourseFeatured({course}:any) {
+interface Course {
+  _id: string;
+  price: number;
+  title?: string;
+  description?: string;
+  thumbnail?: string;
+}
+
+// Properly type the props of the component
+interface CourseFeaturedProps {
+  course: Course; 
+}
+
+export default function CourseFeatured({course}:CourseFeaturedProps) {
   const{data:session} = useSession()
   return (
     <section className="w-full py-12">

@@ -31,7 +31,6 @@ export default function GetAllCourses() {
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [refresh, setRefresh] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -52,8 +51,10 @@ export default function GetAllCourses() {
         const response = await axios.get("/api/get-all-courses");
         setCourses(response.data.courses);
         console.log("all courses::",response.data.courses)
-      } catch (err) {
-        setError("Failed to fetch courses. Please try again later.");
+      }catch (err: unknown) {
+        if (err instanceof Error) {
+        setError(err?.message + "Failed to fetch courses, try again");
+        }
       }finally{
         setLoading(false);
       }
@@ -80,18 +81,17 @@ export default function GetAllCourses() {
   
 
   const handleAddToCart = async (course: Course) => {
-    setRefresh(true);
     try {
       const addedToCartData = await axios.post("/api/add-to-cart", { courseId: course._id });
       if (addedToCartData) {
         setToastMessage(course.title);
         fetchCartItems();
       }
-    } catch (error: any) {
-      setError(error?.message);
-      setToastMessage(error?.message);
-    } finally {
-      setRefresh(false);
+    }catch (error: unknown) {
+      if (error instanceof Error) {
+        setError(error?.message);
+        setToastMessage(error?.message);
+      }
     }
   };
 

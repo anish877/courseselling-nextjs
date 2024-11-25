@@ -18,7 +18,7 @@ export default function NotFoundPage() {
           404
         </h1>
         <p className="text-lg sm:text-xl font-medium text-gray-300 animate-fade-in delay-200">
-          Oops! The page you're looking for cannot be found.
+          Oops! The page you&apos;re looking for cannot be found.
         </p>
 
         {/* Button */}

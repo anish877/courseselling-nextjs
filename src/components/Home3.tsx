@@ -1,5 +1,5 @@
 import React from 'react'
-import { Shield, Award, Users, BookOpen, Code, Palette, BarChart, Microscope, CheckCircle, Lock, CreditCard, FileCheck } from 'lucide-react'
+import { Shield, Award, Users, Code, Palette, BarChart, Microscope, Lock, CreditCard, FileCheck } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 

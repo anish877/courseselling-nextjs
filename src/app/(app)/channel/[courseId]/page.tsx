@@ -86,14 +86,14 @@ export default function CoursePage() {
     fetchCourseData();
   }, [courseId]);
 
-  const handleVideoComplete = (index: number) => {
-    if (!course || !isPurchased) return;
-    const updatedVideos = [...course.videos];
-    updatedVideos[index].completed = true;
-    setCourse({ ...course, videos: updatedVideos });
-    const completedVideos = updatedVideos.filter(video => video.completed).length;
-    setProgress((completedVideos / updatedVideos.length) * 100);
-  };
+  // const handleVideoComplete = (index: number) => {
+  //   if (!course || !isPurchased) return;
+  //   const updatedVideos = [...course.videos];
+  //   updatedVideos[index].completed = true;
+  //   setCourse({ ...course, videos: updatedVideos });
+  //   const completedVideos = updatedVideos.filter(video => video.completed).length;
+  //   setProgress((completedVideos / updatedVideos.length) * 100);
+  // };
 
   if (loading) {
     return (
