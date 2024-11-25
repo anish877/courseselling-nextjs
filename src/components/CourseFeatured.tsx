@@ -1,8 +1,12 @@
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { BookOpen, Rocket, Users, Award } from 'lucide-react'
+import RazorpayPaymentButton from "./RazorpayButton"
+import { useSession } from "next-auth/react"
 
-export default function CourseFeatured() {
+
+export default function CourseFeatured({course}:any) {
+  const{data:session} = useSession()
   return (
     <section className="w-full py-12">
       <div className="container px-4 md:px-6">
@@ -15,9 +19,11 @@ export default function CourseFeatured() {
               <p className="text-xl text-gray-600 max-w-md">
                 Embark on a journey of knowledge and innovation. Our cutting-edge curriculum is designed to propel your career forward.
               </p>
-              <Button size="lg" className="w-full sm:w-auto hover:bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 transition-all duration-300">
+           <RazorpayPaymentButton amount={course?.price} courseId={[course._id]} userId={session?.user?._id}>
+           <Button size="lg" className="w-full sm:w-auto hover:bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 transition-all duration-300">
                 Enroll Now
               </Button>
+           </RazorpayPaymentButton>
             </div>
             <div className="grid grid-cols-2 gap-4 md:gap-8">
               <FeatureIcon icon={BookOpen} color="text-indigo-500" text="Expert-Led Content" />

@@ -308,14 +308,14 @@ export default function CourseDetail() {
             Hear from Our Satisfied Customers
           </p>
           <p className="mt-4 max-w-2xl text-xl text-gray-500 dark:text-gray-300 mx-auto">
-            Discover why businesses trust us to drive their success
+            Discover why students trust us to drive their success
           </p>
         </div>
         <InfiniteMovingCards items={testimonials} speed="slow" />
         <InfiniteMovingCards items={testimonials2} speed="slow" direction='right' />
         <CourseFaq />
       </div>
-        <CourseFeatured />
+        <CourseFeatured course={course}/>
     </div>
     </div>
   )
