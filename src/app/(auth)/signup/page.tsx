@@ -45,33 +45,33 @@ function SignupPage() {
   const password = form.watch('password')
   const phone = form.watch('phone')
 
-  useEffect(() => {
-    const checkUsernameUnique = async () => {
-      if (username) {
-        setIsCheckingUsername(true)
-        setUsernameMessage("")
+  // useEffect(() => {
+  //   const checkUsernameUnique = async () => {
+  //     if (username) {
+  //       setIsCheckingUsername(true)
+  //       setUsernameMessage("")
 
-        try {
-          const axs = axios.create({
-            baseURL: process.env.DOMAIN,
-            withCredentials: true
-          })
+  //       try {
+  //         const axs = axios.create({
+  //           baseURL: process.env.DOMAIN,
+  //           withCredentials: true
+  //         })
 
-          const response = await axs.get(`/api/check-unique-username?username=${username}`)
-          setUsernameMessage(response.data.message)
-        } catch (error) {
-          const axiosError = error as AxiosError<ApiResponse>;
-          setUsernameMessage(axiosError.response?.data.message ?? "Error checking username")
-        } finally {
-          setIsCheckingUsername(false)
-        }
-      }
-    }
+  //         const response = await axs.get(`/api/check-unique-username?username=${username}`)
+  //         setUsernameMessage(response.data.message)
+  //       } catch (error) {
+  //         const axiosError = error as AxiosError<ApiResponse>;
+  //         setUsernameMessage(axiosError.response?.data.message ?? "Error checking username")
+  //       } finally {
+  //         setIsCheckingUsername(false)
+  //       }
+  //     }
+  //   }
 
-    if (username) {
-      checkUsernameUnique()
-    }
-  }, [username])
+  //   if (username) {
+  //     checkUsernameUnique()
+  //   }
+  // }, [username])
 
   const onSubmit = async (data: z.infer<typeof signupSchema>) => {
     setIsSubmitting(true)
