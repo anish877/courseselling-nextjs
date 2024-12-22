@@ -1,19 +1,19 @@
-"use client"
-
 import React, { useState, useEffect, useCallback, useRef } from 'react'
 import ReactPlayer from 'react-player'
 import { Slider } from "@/components/ui/slider"
 import { Button } from "@/components/ui/button"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import { Play, Pause, Volume2, VolumeX, Maximize, Minimize, ChevronDown } from 'lucide-react'
+import { Play, Pause, Volume2, VolumeX, Maximize, Minimize, ChevronDown, Settings } from 'lucide-react'
 
 interface VideoPlayerProps {
   url: string
   title: string
   description: string
+  userId: string
+  videoId: string
 }
 
-export function VideoPlayer({ url, title, description }: VideoPlayerProps) {
+export function VideoPlayer({ url, title, description, userId, videoId }: VideoPlayerProps) {
   const [playing, setPlaying] = useState(false)
   const [volume, setVolume] = useState(0.8)
   const [progress, setProgress] = useState(0)
@@ -23,19 +23,24 @@ export function VideoPlayer({ url, title, description }: VideoPlayerProps) {
   const [loading, setLoading] = useState(true)
   const [showControls, setShowControls] = useState(true)
   const [showSpeedOptions, setShowSpeedOptions] = useState(false)
+  const [hovering, setHovering] = useState(false)
+  const [completed, setCompleted] = useState(false)
 
   const playerRef = useRef<ReactPlayer>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const speedOptionsRef = useRef<HTMLDivElement>(null)
+  const controlsTimeoutRef = useRef<NodeJS.Timeout>()
 
   const handlePlayPause = () => setPlaying(!playing)
   const handleVolumeChange = (value: number[]) => setVolume(value[0])
   const handleProgress = (state: { played: number }) => setProgress(state.played)
   const handleDuration = (duration: number) => setDuration(duration)
+  
   const handleSeek = (value: number[]) => {
     setProgress(value[0])
     playerRef.current?.seekTo(value[0])
   }
+
   const handleFullscreenToggle = () => {
     if (!document.fullscreenElement) {
       containerRef.current?.requestFullscreen()
@@ -45,6 +50,7 @@ export function VideoPlayer({ url, title, description }: VideoPlayerProps) {
       setFullscreen(false)
     }
   }
+
   const handlePlaybackRateChange = (rate: number) => {
     setPlaybackRate(rate)
     setShowSpeedOptions(false)
@@ -64,6 +70,19 @@ export function VideoPlayer({ url, title, description }: VideoPlayerProps) {
     return `${mm}:${ss}`
   }
 
+  const handleMouseMove = () => {
+    setShowControls(true)
+    setHovering(true)
+    if (controlsTimeoutRef.current) {
+      clearTimeout(controlsTimeoutRef.current)
+    }
+    controlsTimeoutRef.current = setTimeout(() => {
+      if (!hovering) {
+        setShowControls(false)
+      }
+    }, 2000)
+  }
+
   const handleKeyPress = useCallback((event: KeyboardEvent) => {
     switch (event.key) {
       case ' ':
@@ -81,6 +100,12 @@ export function VideoPlayer({ url, title, description }: VideoPlayerProps) {
     }
   }, [progress])
 
+  const handleVideoEnd = () => {
+    setPlaying(false)
+    setCompleted(true)  // Update the completion state
+    
+  }
+
   useEffect(() => {
     document.addEventListener('keydown', handleKeyPress)
     return () => {
@@ -94,7 +119,6 @@ export function VideoPlayer({ url, title, description }: VideoPlayerProps) {
         setShowSpeedOptions(false)
       }
     }
-
     document.addEventListener('mousedown', handleClickOutside)
     return () => {
       document.removeEventListener('mousedown', handleClickOutside)
@@ -102,19 +126,23 @@ export function VideoPlayer({ url, title, description }: VideoPlayerProps) {
   }, [])
 
   return (
-    <div className="w-full max-w-4xl mx-auto" ref={containerRef}>
+    <div className="w-full max-w-4xl mx-auto rounded-lg overflow-hidden shadow-2xl" ref={containerRef}>
       <div 
         className="relative aspect-video bg-black"
-        onMouseEnter={() => setShowControls(true)}
-        onMouseLeave={() => setShowControls(false)}
-        onTouchStart={() => setShowControls(true)}
-        onTouchEnd={() => setTimeout(() => setShowControls(false), 3000)}
+        onMouseMove={handleMouseMove}
+        onMouseEnter={() => setHovering(true)}
+        onMouseLeave={() => {
+          setHovering(false)
+          setShowControls(false)
+        }}
+        onClick={handlePlayPause}
       >
         {loading && (
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+          <div className="absolute inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+            <div className="animate-spin rounded-full h-16 w-16 border-4 border-primary border-t-transparent"></div>
           </div>
         )}
+        
         <ReactPlayer
           ref={playerRef}
           url={url}
@@ -128,6 +156,7 @@ export function VideoPlayer({ url, title, description }: VideoPlayerProps) {
           onReady={() => setLoading(false)}
           onBuffer={() => setLoading(true)}
           onBufferEnd={() => setLoading(false)}
+          onEnded={handleVideoEnd}
           progressInterval={100}
           config={{
             file: {
@@ -139,8 +168,34 @@ export function VideoPlayer({ url, title, description }: VideoPlayerProps) {
             },
           }}
         />
-        {showControls && (
-          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-4 z-10">
+
+        {/* Play/Pause overlay button */}
+        <div className={`absolute inset-0 flex items-center justify-center transition-opacity duration-300 ${playing ? 'opacity-0' : 'opacity-100'}`}>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="w-20 h-20 rounded-full bg-primary/20 hover:bg-primary/40 backdrop-blur-sm transition-all duration-300 text-white"
+            onClick={(e) => {
+              e.stopPropagation()
+              handlePlayPause()
+            }}
+          >
+            {playing ? (
+              <Pause className="h-10 w-10" />
+            ) : (
+              <Play className="h-10 w-10 ml-1" />
+            )}
+          </Button>
+        </div>
+
+        {/* Controls overlay */}
+        <div 
+          className={`absolute inset-x-0 bottom-0 transition-all duration-300 ${
+            showControls ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+          }`}
+        >
+          {/* Progress bar */}
+          <div className="absolute bottom-full w-full px-4 mb-2">
             <Slider
               value={[progress]}
               onValueChange={handleSeek}
@@ -148,13 +203,25 @@ export function VideoPlayer({ url, title, description }: VideoPlayerProps) {
               step={0.001}
               className="w-full"
             />
-            <div className="flex flex-wrap items-center justify-between mt-2 gap-2">
-              <div className="flex items-center space-x-2">
+          </div>
+
+          {/* Controls bar */}
+          <div className="bg-gradient-to-t from-black/90 via-black/60 to-transparent p-4 backdrop-blur-sm">
+            <div className="flex flex-wrap items-center justify-between gap-4">
+              <div className="flex items-center space-x-4">
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Button variant="ghost" size="icon" onClick={handlePlayPause} className="text-white hover:text-primary">
-                        {playing ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          handlePlayPause()
+                        }}
+                        className="text-white hover:text-primary transition-colors"
+                      >
+                        {playing ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5" />}
                       </Button>
                     </TooltipTrigger>
                     <TooltipContent>
@@ -162,29 +229,61 @@ export function VideoPlayer({ url, title, description }: VideoPlayerProps) {
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
-                <span className="text-xs sm:text-sm text-white">
+
+                <div className="flex items-center space-x-3">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      setVolume(volume === 0 ? 0.5 : 0)
+                    }}
+                    className="text-white hover:text-primary transition-colors"
+                  >
+                    {volume > 0 ? <Volume2 className="h-5 w-5" /> : <VolumeX className="h-5 w-5" />}
+                  </Button>
+                  <Slider
+                    value={[volume]}
+                    onValueChange={handleVolumeChange}
+                    max={1}
+                    step={0.01}
+                    className="w-24"
+                  />
+                </div>
+
+                <span className="text-sm text-white/90">
                   {formatTime(progress * duration)} / {formatTime(duration)}
                 </span>
               </div>
+
               <div className="flex items-center space-x-2">
                 <div className="relative" ref={speedOptionsRef}>
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => setShowSpeedOptions(!showSpeedOptions)}
-                    className="text-white hover:text-primary"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      setShowSpeedOptions(!showSpeedOptions)
+                    }}
+                    className="text-white hover:text-primary transition-colors"
                   >
-                    {playbackRate}x <ChevronDown className="h-4 w-4 ml-1" />
+                    <Settings className="h-4 w-4 mr-2" />
+                    {playbackRate}x
                   </Button>
                   {showSpeedOptions && (
-                    <div className="absolute bottom-full left-0 mb-2 bg-black rounded-md shadow-lg">
-                      {[0.5, 1, 1.5, 2].map((rate) => (
+                    <div className="absolute bottom-full right-0 mb-2 bg-black/90 backdrop-blur-sm rounded-lg overflow-hidden shadow-xl">
+                      {[0.5, 0.75, 1, 1.25, 1.5, 2].map((rate) => (
                         <Button
                           key={rate}
                           variant="ghost"
                           size="sm"
-                          onClick={() => handlePlaybackRateChange(rate)}
-                          className="block w-full text-left text-white hover:bg-gray-700"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            handlePlaybackRateChange(rate)
+                          }}
+                          className={`block w-full text-left text-white hover:bg-white/10 transition-colors ${
+                            playbackRate === rate ? 'bg-primary text-white' : ''
+                          }`}
                         >
                           {rate}x
                         </Button>
@@ -192,11 +291,20 @@ export function VideoPlayer({ url, title, description }: VideoPlayerProps) {
                     </div>
                   )}
                 </div>
+
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Button variant="ghost" size="icon" onClick={handleFullscreenToggle} className="text-white hover:text-primary">
-                        {fullscreen ? <Minimize className="h-4 w-4" /> : <Maximize className="h-4 w-4" />}
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          handleFullscreenToggle()
+                        }}
+                        className="text-white hover:text-primary transition-colors"
+                      >
+                        {fullscreen ? <Minimize className="h-5 w-5" /> : <Maximize className="h-5 w-5" />}
                       </Button>
                     </TooltipTrigger>
                     <TooltipContent>
@@ -204,30 +312,16 @@ export function VideoPlayer({ url, title, description }: VideoPlayerProps) {
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
-                <div className="flex items-center space-x-2">
-                  {volume > 0 ? (
-                    <Volume2 className="h-4 w-4 text-white" />
-                  ) : (
-                    <VolumeX className="h-4 w-4 text-white" />
-                  )}
-                  <Slider
-                    value={[volume]}
-                    onValueChange={handleVolumeChange}
-                    max={1}
-                    step={0.01}
-                    className="w-16 sm:w-24"
-                  />
-                </div>
               </div>
             </div>
           </div>
-        )}
+        </div>
       </div>
-      <div className="mt-4 space-y-2">
-        <h2 className="text-xl sm:text-2xl font-bold">{title}</h2>
-        <p className="text-sm sm:text-base text-gray-600">{description}</p>
+
+      <div className="mt-6 space-y-3 px-4 pb-6">
+        <h2 className="text-2xl font-bold tracking-tight">{title}</h2>
+        <p className="text-gray-600 leading-relaxed">{description}</p>
       </div>
     </div>
   )
 }
-

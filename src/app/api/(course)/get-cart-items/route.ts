@@ -1,6 +1,6 @@
 import dbConnect from '@/lib/dbConnect';
 import UserModel from '@/model/userModel';
-import CourseModel from '@/model/courseModel'; // Import CourseModel
+import CourseModel from '@/model/courseModel';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '../../auth/[...nextauth]/options';
 

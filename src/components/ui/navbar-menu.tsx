@@ -1,4 +1,4 @@
-"use client";
+
 import React from "react";
 import { motion } from "framer-motion";
 import Link, { LinkProps } from "next/link";
@@ -18,17 +18,19 @@ export const MenuItem = ({
   active,
   item,
   children,
+  className
 }: {
   setActive: (item: string) => void;
   active: string | null;
   item: string;
+  className: string;
   children?: React.ReactNode;
 }) => {
   return (
     <div onMouseEnter={() => setActive(item)} className="relative ">
       <motion.p
         transition={{ duration: 0.3 }}
-        className="cursor-pointer text-black hover:opacity-[0.9] dark:text-white"
+        className= {className}
       >
         {item}
       </motion.p>
@@ -70,7 +72,7 @@ export const Menu = ({
   return (
      <nav
       onMouseLeave={() => setActive(null)} // resets the state
-      className="relative rounded-full border border-transparent dark:bg-black dark:border-none bg-white shadow-input flex justify-center space-x-4 px-8 py-6"
+      className="relative rounded-full border bg-transparent border-transparent- dark:border-red-300 shadow-input flex justify-center space-x-4 px-8 py-6"
     >
       {children}
     </nav>
@@ -82,11 +84,13 @@ export const ProductItem = ({
   description,
   href,
   src,
+  className
 }: {
   title: string;
   description: string;
   href: string;
   src: string;
+  className: string
 }) => {
   return (
     <Link href={href} className="flex space-x-2">
@@ -95,7 +99,7 @@ export const ProductItem = ({
         width={140}
         height={70}
         alt={title}
-        className="flex-shrink-0 rounded-md shadow-2xl"
+        className= {className}
       />
       <div>
         <h4 className="text-xl font-bold mb-1 text-black dark:text-white">

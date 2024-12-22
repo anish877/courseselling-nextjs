@@ -8,11 +8,10 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Users, CheckCircle, Clock, BarChart, Award, Loader2 } from 'lucide-react'
 import axios from 'axios'
-import { useSearchParams } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import RazorpayPaymentButton from '@/components/RazorpayButton'
 import { useSession } from 'next-auth/react'
 import { HoverBorderGradient } from '@/components/ui/hover-border-gradient'
-// import { Course } from '@/model/courseModel'
 import { CheckoutDetails } from '@/components/CheckoutDetails'
 import { InfiniteMovingCards } from '@/components/ui/infinite-moving-cards'
 import CourseFaq from '@/components/CourseFaq'
@@ -31,14 +30,12 @@ type Course = {
   category: string;
 };
 
-
-//Testimonials
 const testimonials = [
   {
     quote: "The course structure was exceptional! Each module built on the previous one, making even the most advanced topics easy to follow.",
     name: "Liam Thompson",
     title: "Software Engineer",
-    avatar: "https://via.placeholder.com/150", // Add actual avatar URL if available
+    avatar: "https://via.placeholder.com/150",
     rating: 5,
     helpfulVotes: 124,
     date: "2024-10-15",
@@ -47,7 +44,7 @@ const testimonials = [
     quote: "Learnix really knows how to deliver top-notch courses. The intuitive interface and easy navigation helped me focus entirely on learning.",
     name: "Rohan Mehta",
     title: "UI/UX Designer",
-    avatar: "https://via.placeholder.com/150", // Add actual avatar URL if available
+    avatar: "https://via.placeholder.com/150",
     rating: 4,
     helpfulVotes: 87,
     date: "2024-11-01",
@@ -56,7 +53,7 @@ const testimonials = [
     quote: "This course gave me the confidence to take on new challenges at work. The combination of theory and practical applications was perfect.",
     name: "Noah Walker",
     title: "Project Manager",
-    avatar: "https://via.placeholder.com/150", // Add actual avatar URL if available
+    avatar: "https://via.placeholder.com/150",
     rating: 5,
     helpfulVotes: 92,
     date: "2024-09-28",
@@ -65,18 +62,19 @@ const testimonials = [
     quote: "The course was a game-changer. I went from knowing very little about the subject to confidently applying it in real-world projects.",
     name: "Aditya Sen",
     title: "Cybersecurity Analyst",
-    avatar: "https://via.placeholder.com/150", // Add actual avatar URL if available
+    avatar: "https://via.placeholder.com/150",
     rating: 5,
     helpfulVotes: 110,
     date: "2024-08-21",
   },
 ];
+
 const testimonials2 = [
   {
-    quote: "The instructor’s approach was unique, and the practical examples made the learning process truly enjoyable.",
+    quote: "The instructor's approach was unique, and the practical examples made the learning process truly enjoyable.",
     name: "Ananya Sharma",
     title: "Data Scientist",
-    avatar: "https://via.placeholder.com/150", // Add actual avatar URL if available
+    avatar: "https://via.placeholder.com/150",
     rating: 5,
     helpfulVotes: 145,
     date: "2024-11-10",
@@ -85,7 +83,7 @@ const testimonials2 = [
     quote: "Thanks to this course, I was able to land my dream job. The content is detailed, yet easy to understand.",
     name: "Sophia Davis",
     title: "Machine Learning Engineer",
-    avatar: "https://via.placeholder.com/150", // Add actual avatar URL if available
+    avatar: "https://via.placeholder.com/150",
     rating: 5,
     helpfulVotes: 138,
     date: "2024-10-20",
@@ -94,7 +92,7 @@ const testimonials2 = [
     quote: "The real-world case studies in the course added so much value. I could immediately apply what I learned.",
     name: "Aditi Gupta",
     title: "Business Analyst",
-    avatar: "https://via.placeholder.com/150", // Add actual avatar URL if available
+    avatar: "https://via.placeholder.com/150",
     rating: 4,
     helpfulVotes: 120,
     date: "2024-10-05",
@@ -103,17 +101,13 @@ const testimonials2 = [
     quote: "The interactive format and step-by-step guidance set this course apart from others. Highly recommend it!",
     name: "Arjun Nair",
     title: "Software Developer",
-    avatar: "https://via.placeholder.com/150", // Add actual avatar URL if available
+    avatar: "https://via.placeholder.com/150",
     rating: 5,
     helpfulVotes: 156,
     date: "2024-09-18",
   },
 ];
 
-
-
-
-// This would typically be fetched from an API
 const courseDetails = {
   title: "Advanced React and Next.js Development",
   slogan: "Master modern web development and take your career to the next level",
@@ -141,27 +135,72 @@ const courseDetails = {
 }
 
 export default function CourseDetail() {
-
   const searchParams = useSearchParams()
   const courseId = searchParams.get("course_id")
   const [course, setCourse] = useState<Course | null>(null);
   const {data: session} = useSession()
+  const [purchasedCoursesId, setPurchasedCoursesId] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const purchasedCourseId = purchasedCoursesId.includes(`${courseId}`) ? courseId : ""
+  const isPurchased = purchasedCourseId === courseId
+  const router = useRouter()
+
+  useEffect(() => {
+    const fetchPurchasedCourses = async () => {
+      try {
+        setIsLoading(true);
+        const response = await axios.get<{ courses: Course[] }>("/api/all-purchased-courses");
+        setPurchasedCoursesId(response.data.courses.map((course) => course._id));
+      } catch (error) {
+        console.error("Failed to fetch purchased courses", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (session) {
+      fetchPurchasedCourses();
+    }
+  }, [session]);
   
   useEffect(() => {
-    (async () => {
+    const fetchCourseDetails = async () => {
       try {
-        const response = await axios.post(`api/get-course-by-id`, {courseId})
-      console.log(response.data, courseId)
-      if(response){
-        setCourse(response?.data?.course)
+        setIsLoading(true);
+        const response = await axios.post(`api/get-course-by-id`, {courseId});
+        if(response) {
+          setCourse(response?.data?.course);
+        }
+      } catch (error) {
+        console.log(`Error in fetching from ::"get course by Id" ${error}`);
+      } finally {
+        setIsLoading(false);
       }
-     } catch (error) {
-       console.log(`Error in fetching from ::"get course by Id" ${error}`)
-      }
-    })()
-  }, [courseId])
+    };
+
+    if (courseId) {
+      fetchCourseDetails();
+    }
+  }, [courseId]);
   
-  if (!course) return <div className='h-screen flex items-center justify-center'><Loader2 className='animate-spin w-8 h-8'/></div>
+  if (isLoading) {
+    return (
+      <div className='h-screen flex items-center justify-center'>
+        <Loader2 className='animate-spin w-8 h-8'/>
+      </div>
+    );
+  }
+
+  if (!course) {
+    return (
+      <div className='h-screen flex items-center justify-center flex-col gap-4'>
+        <p className='text-lg text-gray-500'>Course not found</p>
+        <Button variant="outline" onClick={() => window.history.back()}>
+          Go Back
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
@@ -190,8 +229,6 @@ export default function CourseDetail() {
             <div className="aspect-w-16 aspect-h-9 mb-8">
               <video
                 src={course?.previewVideo}
-                // allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                // allowFullScreen
                 controls
                 className="rounded-lg shadow-lg"
               ></video>
@@ -256,19 +293,42 @@ export default function CourseDetail() {
           </div>
 
           <div>
-            <Card className="sticky top-4">
-              <CardContent className="p-6">
-                <div className="text-center mb-6">
-                  <p className='line-through text-rose-400'>₹{course?.price*5}</p>
-                  <p className="text-3xl font-bold mb-2">₹{course?.price}</p>
-                  <RazorpayPaymentButton amount={course.price} courseId={[course._id]} userId={session?.user?._id}>
-                  <HoverBorderGradient  className='w-full'>
-                    Enroll Now
-                  </HoverBorderGradient>
-                  </RazorpayPaymentButton>
-                  <p className="mt-2 text-sm text-gray-500">{courseDetails.refundPolicy}</p>
-                </div>
-                <div className="space-y-4">
+          <Card className="sticky top-4">
+  <CardContent className="p-6">
+    {isPurchased ? (
+      <div className="text-center mb-6">
+        <h2 className="text-2xl font-bold mb-4">Continue Learning</h2>
+        <Button 
+          variant="ghost" 
+          className="w-full h-12 text-lg font-semibold bg-gradient-to-r from-indigo-500 to-purple-500 text-white hover:from-indigo-600 hover:to-purple-600 transition-all duration-300"
+          onClick={() => router.push(`/channel/${course?._id}`)}
+        >
+          Resume Course
+        </Button>
+        <p className="mt-4 text-sm text-gray-500">
+          Pick up where you left off
+        </p>
+      </div>
+    ) : (
+      <div className="text-center mb-6">
+        <p className='line-through text-rose-400'>₹{course?.price*5}</p>
+        <p className="text-3xl font-bold mb-2">₹{course?.price}</p>
+        <RazorpayPaymentButton 
+          amount={course.price} 
+          courseId={[course._id]} 
+          userId={session?.user?._id}
+        >
+          <Button 
+            variant="default"
+            className="w-full h-12 text-lg font-semibold"
+          >
+            Enroll Now
+          </Button>
+        </RazorpayPaymentButton>
+        <p className="mt-2 text-sm text-gray-500">{courseDetails.refundPolicy}</p>
+      </div>
+    )}
+    <div className="space-y-4">
                   <div className="flex items-center">
                     <Users className="h-5 w-5 text-gray-400 mr-2" />
                     <span>{courseDetails.enrolledStudents.toLocaleString()} students enrolled</span>
@@ -301,22 +361,24 @@ export default function CourseDetail() {
       </div>
       <CheckoutDetails />
       <div className="py-12">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
-          <h2 className="text-base text-indigo-600 dark:text-indigo-400 font-semibold tracking-wide uppercase">Testimonials</h2>
-          <p className="mt-2 text-3xl font-extrabold text-gray-900 dark:text-white sm:text-4xl">
-            Hear from Our Satisfied Customers
-          </p>
-          <p className="mt-4 max-w-2xl text-xl text-gray-500 dark:text-gray-300 mx-auto">
-            Discover why students trust us to drive their success
-          </p>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-base text-indigo-600 dark:text-indigo-400 font-semibold tracking-wide uppercase">
+              Testimonials
+            </h2>
+            <p className="mt-2 text-3xl font-extrabold text-gray-900 dark:text-white sm:text-4xl">
+              Hear from Our Satisfied Customers
+            </p>
+            <p className="mt-4 max-w-2xl text-xl text-gray-500 dark:text-gray-300 mx-auto">
+              Discover why students trust us to drive their success
+            </p>
+          </div>
+          <InfiniteMovingCards items={testimonials} speed="slow" />
+          <InfiniteMovingCards items={testimonials2} speed="slow" direction='right' />
+          <CourseFaq />
         </div>
-        <InfiniteMovingCards items={testimonials} speed="slow" />
-        <InfiniteMovingCards items={testimonials2} speed="slow" direction='right' />
-        <CourseFaq />
-      </div>
         <CourseFeatured course={course}/>
-    </div>
+      </div>
     </div>
   )
 }
@@ -339,4 +401,3 @@ function Star(props: React.SVGProps<SVGSVGElement>) {
     </svg>
   )
 }
-

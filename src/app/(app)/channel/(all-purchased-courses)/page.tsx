@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 // import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Loader2, Search, BookOpen } from 'lucide-react'
+import { useSession } from "next-auth/react"
 
 type Course = {
   _id: string
@@ -23,6 +24,7 @@ export default function CoursesPage() {
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState("")
   const router = useRouter()
+  const {data: session} = useSession()
 
   useEffect(() => {
     async function fetchCourses() {
@@ -37,7 +39,7 @@ export default function CoursesPage() {
         setLoading(false)
       }
     }
-    fetchCourses()
+    session?fetchCourses():null
   }, [])
 
   useEffect(() => {

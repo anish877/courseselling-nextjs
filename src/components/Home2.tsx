@@ -1,76 +1,11 @@
-'use client'
-
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardFooter } from "@/components/ui/card";
-import Image from "next/image";
+import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Star, Users, Clock, ChevronRight } from 'lucide-react';
-import axios from "axios";
+import { Star, Users, Clock, ChevronRight, BookOpen, Trophy, Tag } from 'lucide-react';
+import Image from "next/image";
 import Link from "next/link";
-
-
-// const courses: Course[] = [
-//   {
-//     id: 1,
-//     title: "Mastering JavaScript",
-//     description: "Learn JavaScript from basics to advanced with real-world projects and expert mentorship.",
-//     image: "https://aceternity.com/images/products/thumbnails/new/efreeinvoice.png",
-//     video: "https://videos.pexels.com/video-files/5302513/5302513-sd_640_360_25fps.mp4",
-//     buttonText: "Buy Now",
-//     price: "₹74",
-//     discount: "78% Disc. ₹339",
-//     rating: 4.8,
-//     students: 15000,
-//     duration: "20 hours",
-//     level: "Beginner to Advanced",
-//   },
-//   {
-//     id: 2,
-//     title: "UI/UX Design Fundamentals",
-//     description: "Design stunning user interfaces and deliver exceptional user experiences with this course.",
-//     image: "https://aceternity.com/images/products/thumbnails/new/efreeinvoice.png",
-//     video: "https://www.w3schools.com/html/movie.mp4",
-//     buttonText: "Buy Now",
-//     price: "₹90",
-//     discount: "50% Disc. ₹180",
-//     rating: 4.7,
-//     students: 12000,
-//     duration: "15 hours",
-//     level: "Intermediate",
-//   },
-//   {
-//     id: 3,
-//     title: "Python for Data Science",
-//     description: "Master Python programming and its applications in data science and machine learning.",
-//     image: "https://aceternity.com/images/products/thumbnails/new/efreeinvoice.png",
-//     video: "https://www.w3schools.com/html/movie.mp4",
-//     buttonText: "Buy Now",
-//     price: "₹120",
-//     discount: "40% Disc. ₹200",
-//     rating: 4.9,
-//     students: 18000,
-//     duration: "25 hours",
-//     level: "Intermediate to Advanced",
-//   },
-//   {
-//     id: 4,
-//     title: "Web Development Bootcamp",
-//     description: "Comprehensive course covering front-end and back-end technologies for full-stack development.",
-//     image: "https://images.pexels.com/photos/1181271/pexels-photo-1181271.jpeg?auto=compress&cs=tinysrgb&w=600",
-//     video: "https://videos.pexels.com/video-files/5302513/5302513-sd_640_360_25fps.mp4",
-//     buttonText: "Buy Now",
-//     price: "₹150",
-//     discount: "30% Disc. ₹215",
-//     rating: 4.8,
-//     students: 20000,
-//     duration: "30 hours",
-//     level: "Beginner to Advanced",
-//   },
-// ];
-
-
-//Real Backend Data
+import axios from "axios";
 
 interface SimpleCourse {
   _id: string;
@@ -81,90 +16,135 @@ interface SimpleCourse {
 }
 
 export default function CourseDetailsPage() {
-  // const [open, setOpen] = useState(false);
-  // const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const [courseData, setCourseData] = useState<SimpleCourse[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchCourses = async () => {
       try {
         const response = await axios.get("/api/get-all-courses");
         setCourseData(response.data.courses);
-        console.log("all courses::",response.data.courses)
       } catch (err) {
-          console.log(err)
-      }finally{
+        console.error("Error fetching courses:", err);
+      } finally {
+        setIsLoading(false);
       }
     };
 
     fetchCourses();
   }, []);
 
-  // const handleCourseClick = (course: Course) => {
-  //   setSelectedCourse(course);
-  //   setOpen(true);
-  // };
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-40">
-      <div className="container mx-auto space-y-16">
-        <h1 className="text-center text-3xl sm:text-4xl font-bold mb-10">
-          Explore Our Popular Courses
-        </h1>
-
-        {courseData?.map((course, index) => (
-          <div
-            key={course?._id}
-            className={`flex flex-col lg:flex-row items-center ${
-              index % 2 === 0 ? "lg:flex-row" : "lg:flex-row-reverse"
-            } gap-12`}
-          >
-            <div className="w-full lg:w-1/2">
-              <Card className="overflow-hidden shadow-md">
-                <CardHeader className="p-0">
-                  <Image
-                    src={course?.thumbnail}
-                    alt={course?.title}
-                    width={600}
-                    height={400}
-                    className="w-full h-[300px] object-cover"
-                  />
-                </CardHeader>
-                <CardFooter className="text-center py-2">
-                  <Badge variant="default">Advance</Badge>
-                </CardFooter>
-              </Card>
-            </div>
-
-            <div className="flex-1 text-center lg:text-left">
-              <h2 className="text-2xl font-bold mb-4">{course?.title}</h2>
-              <p className="text-base mb-6">
-                {course?.description}
-              </p>
-              <div className="flex flex-wrap gap-4 justify-center lg:justify-start mb-6">
-                <Badge variant="outline" className="flex items-center gap-1">
-                  <Star className="w-4 h-4" /> { 4.8}
-                </Badge>
-                <Badge variant="outline" className="flex items-center gap-1">
-                  <Users className="w-4 h-4" />  12000 students
-                </Badge>
-                <Badge variant="outline" className="flex items-center gap-1">
-                  <Clock className="w-4 h-4" /> 8 hours
-                </Badge>
-              </div>
-              <Link href={`/checkout?course_id=${course._id}`}>
-              <Button
-                className="px-6 py-2 text-sm font-medium"
-                // onClick={() => handleCourseClick(course)}
-              >
-                Learn More <ChevronRight className="w-4 h-4 ml-2" />
-              </Button>
-              </Link>
-            </div>
+    <div className="min-h-screen bg-background">
+      <div className="py-16 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
+              Explore Our Popular Courses
+            </h1>
+            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+              Transform your skills with industry-leading courses designed by experts
+            </p>
           </div>
-        ))}
+
+          <div className="space-y-20">
+            {courseData?.map((course, index) => (
+              <div
+                key={course?._id}
+                className="group"
+              >
+                <div className={`flex flex-col lg:flex-row items-center gap-12 ${
+                  index % 2 === 0 ? "" : "lg:flex-row-reverse"
+                }`}>
+                  <div className="w-full lg:w-1/2 transition-transform duration-300 group-hover:scale-[1.02]">
+                    <Card className="overflow-hidden">
+                      <CardHeader className="p-0 relative">
+                        <div className="absolute top-4 right-4 z-10">
+                          <Badge>Featured</Badge>
+                        </div>
+                        <Image
+                          src={course?.thumbnail}
+                          alt={course?.title}
+                          width={600}
+                          height={400}
+                          className="w-full h-[400px] object-cover"
+                        />
+                      </CardHeader>
+                      <CardContent className="p-6">
+                        <div className="flex items-center justify-between mb-4">
+                          <Badge variant="outline" className="flex items-center gap-1">
+                            <BookOpen className="w-4 h-4" /> Advanced Level
+                          </Badge>
+                          <Badge variant="outline" className="flex items-center gap-1">
+                            <Tag className="w-4 h-4" /> Best Seller
+                          </Badge>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+
+                  <div className="flex-1 text-center lg:text-left">
+                    <h2 className="text-3xl font-bold mb-6 text-foreground">
+                      {course?.title}
+                    </h2>
+                    <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
+                      {course?.description}
+                    </p>
+                    
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
+                      <div className="p-4 bg-card rounded-lg border">
+                        <div className="flex items-center gap-2 mb-2">
+                          <Star className="w-5 h-5 text-yellow-500" />
+                          <span className="font-semibold">4.8 Rating</span>
+                        </div>
+                        <p className="text-sm text-muted-foreground">From 2.5k reviews</p>
+                      </div>
+                      
+                      <div className="p-4 bg-card rounded-lg border">
+                        <div className="flex items-center gap-2 mb-2">
+                          <Users className="w-5 h-5 text-primary" />
+                          <span className="font-semibold">12k Students</span>
+                        </div>
+                        <p className="text-sm text-muted-foreground">Enrolled worldwide</p>
+                      </div>
+                      
+                      <div className="p-4 bg-card rounded-lg border">
+                        <div className="flex items-center gap-2 mb-2">
+                          <Trophy className="w-5 h-5 text-primary" />
+                          <span className="font-semibold">Certificate</span>
+                        </div>
+                        <p className="text-sm text-muted-foreground">Upon completion</p>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-4">
+                      <Link href={`/checkout?course_id=${course._id}`}>
+                        <Button
+                          className="px-8 py-6 text-base font-semibold"
+                        >
+                          Enroll Now <ChevronRight className="w-5 h-5 ml-2" />
+                        </Button>
+                      </Link>
+                      <div className="flex items-center gap-2">
+                        <Clock className="w-5 h-5 text-muted-foreground" />
+                        <span className="text-muted-foreground">8 weeks • Self-paced</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );
 }
-

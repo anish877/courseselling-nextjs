@@ -49,6 +49,7 @@ export async function GET(req: Request, { params }: { params: { courseId: string
         description: course.description,
         thumbnail: course.thumbnail,
         videos: course.videos,
+        userId: userId,
       });
     }
 
@@ -68,6 +69,7 @@ export async function GET(req: Request, { params }: { params: { courseId: string
       price: course.price,
       videos: course.videos,
       thumbnail: course.thumbnail,
+      userId: userId,
     });
   } catch (error) {
     console.error("Error fetching course videos:", error);

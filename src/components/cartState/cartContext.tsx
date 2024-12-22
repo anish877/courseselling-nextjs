@@ -1,6 +1,7 @@
 'use client'
 import React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
 import axios from 'axios';
+import { useSession } from 'next-auth/react';
 
 // Define the shape of the cart item
 interface CartItem {
@@ -33,10 +34,11 @@ export const useCart = () => {
 
 export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const {data: session} = useSession()
   // const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    fetchCartItems();
+    session?fetchCartItems():null;
   }, []);
 
   const fetchCartItems = async () => {

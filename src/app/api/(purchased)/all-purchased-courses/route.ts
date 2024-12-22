@@ -21,8 +21,12 @@ export async function GET() {
       status: "completed",
     }).populate("course");
 
+    // Return empty courses array if no orders found
     if (!orders || orders.length === 0) {
-      return NextResponse.json({ error: "No purchased courses found" }, { status: 404 });
+      return NextResponse.json({ 
+        success: true, 
+        courses: [] 
+      }, { status: 200 });
     }
 
     // Step 3: Extract all course IDs from the user's orders
@@ -33,7 +37,7 @@ export async function GET() {
       _id: { $in: purchasedCourseIds },
     }).select("_id title description videos thumbnail");
 
-    // Step 5: Format the response to return all videos with the course details
+    // Step 5: Format the response
     const response = purchasedCourses.map((course) => ({
       _id: course._id,
       title: course.title,

@@ -9,6 +9,13 @@ export interface Cart extends Document {
   _id: string;
 }
 
+
+interface VideoCompletion {
+  videoId: mongoose.Schema.Types.ObjectId;
+  isCompleted: boolean;
+}
+
+
 export interface User extends Document {
   username: string;
   email: string;
@@ -21,8 +28,21 @@ export interface User extends Document {
   messages: Message[];
   cart: Cart[];
   purchasedCourses: mongoose.Schema.Types.ObjectId[]; // References to Course IDs course
-  isAdmin:boolean
+  isAdmin:boolean;
+  videoCompletions: VideoCompletion[];
 }
+
+const VideoCompletionSchema = new Schema({
+  videoId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Video',
+    required: true
+  },
+  isCompleted: {
+    type: Boolean,
+    default: false
+  }
+}, { _id: false }); // Disable _id for subdocuments to keep it lean
 
 const MessageSchema: Schema<Message> = new Schema(
   {
@@ -70,13 +90,16 @@ const UserSchema: Schema<User> = new Schema(
     messages: [MessageSchema],
     purchasedCourses: [{ type: mongoose.Schema.Types.ObjectId, ref: "Course" }],
     isAdmin: { type: Boolean, default: false },
+    videoCompletions: [VideoCompletionSchema]
   },
   { timestamps: true }
 );
+
+UserSchema.index({ 'videoCompletions.videoId': 1 });
 
 
 const UserModel =
   (mongoose.models.User as mongoose.Model<User>) ||
   mongoose.model<User>("User", UserSchema);
 
-export default UserModel;
+export default UserModel

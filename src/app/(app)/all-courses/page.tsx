@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import axios from "axios";
 import CourseCard from "@/components/CourseCard";
-import { Loader2 } from "lucide-react";
+import { GraduationCap, Loader2 } from "lucide-react";
 import CourseDetailModal from "@/components/CourseDetailModal";
 import {
   ToastProvider,
@@ -64,7 +64,7 @@ export default function GetAllCourses() {
   }, []);
 
   useEffect(() => {
-    (async () => {
+    session?((async () => {
       try {
         const response = await axios.get<{ courses: Course[] }>("/api/all-purchased-courses");//by current user
         setLoading(true)
@@ -75,7 +75,7 @@ export default function GetAllCourses() {
       }finally{
         setLoading(false)
       }
-    })();
+    })()):null;
   }, [session, router]);
   
   
@@ -83,6 +83,7 @@ export default function GetAllCourses() {
   const handleAddToCart = async (course: Course) => {
     try {
       const addedToCartData = await axios.post("/api/add-to-cart", { courseId: course._id });
+      console.log(addedToCartData)
       if (addedToCartData) {
         setToastMessage(course.title);
         fetchCartItems();
@@ -124,10 +125,20 @@ export default function GetAllCourses() {
   return (
     <ToastProvider>
       <div className="py-12 px-4 sm:px-6 lg:px-8">
-        <h1 className="text-5xl font-extrabold text-center mb-8">All Courses({courses?.length})</h1>
+      <div className="text-center space-y-4 mb-12">
+            <div className="flex items-center justify-center gap-3 mb-2">
+              <GraduationCap className="h-10 w-10 text-blue-500" />
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight">
+                Explore Our Courses
+              </h1>
+            </div>
+            <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+              Discover our collection of <span className="font-medium">{courses?.length}</span> expert-crafted courses
+            </p>
+          </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
   {courses.map((course) => (
-    <CourseCard
+      <CourseCard
       key={course.title}
       courseId={course._id}
       title={course.title}
