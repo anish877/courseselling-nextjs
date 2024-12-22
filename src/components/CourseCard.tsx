@@ -104,7 +104,7 @@ export default function CourseCard({
                 whileTap={{ scale: 0.95 }}
                 className="rounded-full bg-white/20 backdrop-blur-sm p-4"
               >
-                <PlayCircle className="w-12 h-12 text-white" />
+                <PlayCircle className="w-12 h-12 text-white" onClick={onWatchClick} />
               </motion.div>
             </motion.div>
           )}

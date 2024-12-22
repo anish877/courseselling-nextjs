@@ -23,7 +23,7 @@ const Cart: React.FC<CartProps> = ({ icon = <ShoppingCart className="w-5 h-5" />
   const { cartItems, totalItems, totalPrice, deleteFromCart } = useCart()
   const { data: session } = useSession()
   const [isOpen, setIsOpen] = useState(false)
-
+  console.log(cartItems)
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
@@ -98,9 +98,9 @@ const Cart: React.FC<CartProps> = ({ icon = <ShoppingCart className="w-5 h-5" />
               </div>
             </ScrollArea>
 
-            <div className="space-y-4 p-4 bg-gray-50 rounded-lg">
+            <div className="space-y-4 p-4 bg-transparent rounded-lg">
               <div className="flex justify-between items-center">
-                <span className="text-base font-medium text-gray-900">Total Amount</span>
+                <span className="text-base font-medium text-white">Total Amount</span>
                 <span className="text-2xl font-bold text-primary">₹{totalPrice.toFixed(2)}</span>
               </div>
               

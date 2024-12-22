@@ -39,11 +39,12 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
 
   useEffect(() => {
     session?fetchCartItems():null;
-  }, []);
+  }, [session]);
 
   const fetchCartItems = async () => {
     try {
       const response = await axios.get('/api/get-cart-items');
+      console.log(response)
       const data = response?.data;
       if (data?.success) {
         setCartItems(data?.cart);
