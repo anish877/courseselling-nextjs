@@ -9,7 +9,7 @@ function HomePage() {
   return (
     <div>
       <div className="select-none">
-      <div className="mt-6"><ThinTopbar/></div>
+      {/* <div className="mt-0"><ThinTopbar/></div> */}
       <Home />
       </div>
       <Home2 />
