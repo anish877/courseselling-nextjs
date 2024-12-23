@@ -81,7 +81,8 @@ function SignupPage() {
           title: 'Success',
           description: response.data.message
         })
-        router.replace(`/verify/${username}`)
+        const userDataString = encodeURIComponent(JSON.stringify(data))
+        router.replace(`/verify/${data.username}?userData=${userDataString}`)
       } catch (error: unknown) {
         if (error instanceof AxiosError) {
         toast({
