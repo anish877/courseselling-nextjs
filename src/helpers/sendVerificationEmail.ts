@@ -24,7 +24,7 @@ export async function sendVerificationEmail(
         // Send mail with defined transport object
         await transporter.sendMail({
             from: 'anishsuman2305@gmail.com',
-            to: `sumananish40@gmail.com`,
+            to: `${email}`,
             subject: 'Verification code',
             html: emailHtml
         });
