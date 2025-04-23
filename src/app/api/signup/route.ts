@@ -67,8 +67,7 @@ export async function POST(request:Request) {
        }
        //Send verification email
       const emailResponse = await sendVerificationEmail(email,username,verifyCode)
-      console.log("Sign up route",emailResponse, verifyCode, username, email, password)
-
+      console.log(emailResponse)
       if(!emailResponse.success){
         return Response.json({
             success: false,
